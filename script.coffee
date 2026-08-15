@@ -1,0 +1,225 @@
+# Trigger World — Keyboard Tracker + Language Switcher (CoffeeScript)
+
+document.addEventListener 'DOMContentLoaded', ->
+
+  # ---------- DOM refs ----------
+  body          = document.body
+  pressedLine   = document.getElementById 'pressedLine'
+  releasedLine  = document.getElementById 'releasedLine'
+  pressedLabel  = document.getElementById 'pressedLabel'
+  releasedLabel = document.getElementById 'releasedLabel'
+  pressedName   = document.getElementById 'pressedName'
+  releasedName  = document.getElementById 'releasedName'
+  subtitleEl    = document.getElementById 'subtitle'
+  footerEl      = document.getElementById 'footerNote'
+  langBtnText   = document.getElementById 'langBtnText'
+  langBtn       = document.getElementById 'langBtn'
+
+  # ---------- state ----------
+  activeKeys   = {}
+  languages    = ['en', 'ur', 'he']
+  langIndex    = 0
+
+  # ---------- key label dictionaries (per data-code) ----------
+  labels =
+    en:
+      Escape: 'Esc', F1: 'F1', F2: 'F2', F3: 'F3', F4: 'F4', F5: 'F5', F6: 'F6'
+      F7: 'F7', F8: 'F8', F9: 'F9', F10: 'F10', F11: 'F11', F12: 'F12'
+      PrintScreen: 'PrtScn', ScrollLock: 'ScrLk', Pause: 'Pause'
+      Backquote: '`', Digit1: '1', Digit2: '2', Digit3: '3', Digit4: '4', Digit5: '5'
+      Digit6: '6', Digit7: '7', Digit8: '8', Digit9: '9', Digit0: '0'
+      Minus: '-', Equal: '=', Backspace: '⌫ Backspace'
+      Tab: 'Tab', KeyQ: 'Q', KeyW: 'W', KeyE: 'E', KeyR: 'R', KeyT: 'T'
+      KeyY: 'Y', KeyU: 'U', KeyI: 'I', KeyO: 'O', KeyP: 'P'
+      BracketLeft: '[', BracketRight: ']', Backslash: '\\'
+      CapsLock: 'Caps Lock', KeyA: 'A', KeyS: 'S', KeyD: 'D', KeyF: 'F', KeyG: 'G'
+      KeyH: 'H', KeyJ: 'J', KeyK: 'K', KeyL: 'L', Semicolon: ';', Quote: "'"
+      Enter: '⏎ Enter'
+      ShiftLeft: 'Shift', KeyZ: 'Z', KeyX: 'X', KeyC: 'C', KeyV: 'V', KeyB: 'B'
+      KeyN: 'N', KeyM: 'M', Comma: ',', Period: '.', Slash: '/', ShiftRight: 'Shift'
+      ControlLeft: 'Ctrl', MetaLeft: 'Win', AltLeft: 'Alt', Space: 'Space'
+      AltRight: 'Alt', MetaRight: 'Win', ContextMenu: 'Menu', ControlRight: 'Ctrl'
+      Insert: 'Insert', Home: 'Home', PageUp: 'Page Up'
+      Delete: 'Delete', End: 'End', PageDown: 'Page Down'
+      ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→'
+
+    ur:
+      Escape: 'خروج', F1: 'F1', F2: 'F2', F3: 'F3', F4: 'F4', F5: 'F5', F6: 'F6'
+      F7: 'F7', F8: 'F8', F9: 'F9', F10: 'F10', F11: 'F11', F12: 'F12'
+      PrintScreen: 'پرنٹ اسکرین', ScrollLock: 'اسکرول لاک', Pause: 'وقفہ'
+      Backquote: '`', Digit1: '۱', Digit2: '۲', Digit3: '۳', Digit4: '۴', Digit5: '۵'
+      Digit6: '۶', Digit7: '۷', Digit8: '۸', Digit9: '۹', Digit0: '۰'
+      Minus: '-', Equal: '=', Backspace: '⌫ پیچھے'
+      Tab: 'ٹیب', KeyQ: 'ق', KeyW: 'و', KeyE: 'ع', KeyR: 'ر', KeyT: 'ت'
+      KeyY: 'ے', KeyU: 'ء', KeyI: 'ی', KeyO: 'ہ', KeyP: 'پ'
+      BracketLeft: '[', BracketRight: ']', Backslash: '\\'
+      CapsLock: 'کیپس لاک', KeyA: 'ا', KeyS: 'س', KeyD: 'د', KeyF: 'ف', KeyG: 'گ'
+      KeyH: 'ھ', KeyJ: 'ج', KeyK: 'ک', KeyL: 'ل', Semicolon: '؛', Quote: "'"
+      Enter: '⏎ انٹر'
+      ShiftLeft: 'شفٹ', KeyZ: 'ز', KeyX: 'ش', KeyC: 'چ', KeyV: 'ط', KeyB: 'ب'
+      KeyN: 'ن', KeyM: 'م', Comma: '،', Period: '۔', Slash: '/', ShiftRight: 'شفٹ'
+      ControlLeft: 'کنٹرول', MetaLeft: 'ونڈوز', AltLeft: 'آلٹ', Space: 'اسپیس'
+      AltRight: 'آلٹ', MetaRight: 'ونڈوز', ContextMenu: 'مینو', ControlRight: 'کنٹرول'
+      Insert: 'داخل', Home: 'ابتدا', PageUp: 'صفحہ اوپر'
+      Delete: 'حذف', End: 'اختتام', PageDown: 'صفحہ نیچے'
+      ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→'
+
+    he:
+      Escape: 'בריחה', F1: 'F1', F2: 'F2', F3: 'F3', F4: 'F4', F5: 'F5', F6: 'F6'
+      F7: 'F7', F8: 'F8', F9: 'F9', F10: 'F10', F11: 'F11', F12: 'F12'
+      PrintScreen: 'הדפס מסך', ScrollLock: 'נעילת גלילה', Pause: 'השהה'
+      Backquote: '`', Digit1: '1', Digit2: '2', Digit3: '3', Digit4: '4', Digit5: '5'
+      Digit6: '6', Digit7: '7', Digit8: '8', Digit9: '9', Digit0: '0'
+      Minus: '-', Equal: '=', Backspace: '⌫ מחיקה'
+      Tab: 'טאב', KeyQ: '/', KeyW: "'", KeyE: 'ק', KeyR: 'ר', KeyT: 'א'
+      KeyY: 'ט', KeyU: 'ו', KeyI: 'ן', KeyO: 'ם', KeyP: 'פ'
+      BracketLeft: '[', BracketRight: ']', Backslash: '\\'
+      CapsLock: 'נעילה', KeyA: 'ש', KeyS: 'ד', KeyD: 'ג', KeyF: 'כ', KeyG: 'ע'
+      KeyH: 'י', KeyJ: 'ח', KeyK: 'ל', KeyL: 'ך', Semicolon: 'ף', Quote: ','
+      Enter: '⏎ הזן'
+      ShiftLeft: 'שיפט', KeyZ: 'ז', KeyX: 'ס', KeyC: 'ב', KeyV: 'ה', KeyB: 'נ'
+      KeyN: 'מ', KeyM: 'צ', Comma: 'ת', Period: 'ץ', Slash: '.', ShiftRight: 'שיפט'
+      ControlLeft: 'קונטרול', MetaLeft: 'חלונות', AltLeft: 'אלט', Space: 'רווח'
+      AltRight: 'אלט', MetaRight: 'חלונות', ContextMenu: 'תפריט', ControlRight: 'קונטרול'
+      Insert: 'הוספה', Home: 'בית', PageUp: 'דף למעלה'
+      Delete: 'מחיקה', End: 'סוף', PageDown: 'דף למטה'
+      ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→'
+
+  # ---------- UI text per language ----------
+  ui =
+    en:
+      subtitle: 'Press any key on your PC keyboard to see it live'
+      pressed: 'Pressed:'
+      released: 'Released:'
+      pressedPlaceholder: '— no key pressed yet —'
+      releasedPlaceholder: '— no key released yet —'
+      footer: 'Built with pure SASS + CoffeeScript. Press a letter key to hear it spoken.'
+      btn: 'EN'
+      dir: 'ltr'
+    ur:
+      subtitle: 'اپنے پی سی کیبورڈ کی کوئی بھی بٹن دبائیں'
+      pressed: 'دبایا:'
+      released: 'چھوڑا:'
+      pressedPlaceholder: '— ابھی تک کوئی بٹن نہیں دبایا —'
+      releasedPlaceholder: '— ابھی تک کوئی بٹن نہیں چھوڑا —'
+      footer: 'یہ صفحہ خالص SASS اور CoffeeScript سے بنایا گیا ہے۔ کوئی بھی حرف دبائیں تاکہ اس کی آواز سن سکیں۔'
+      btn: 'اردو'
+      dir: 'rtl'
+    he:
+      subtitle: 'לחץ על כל מקש במקלדת המחשב שלך'
+      pressed: 'נלחץ:'
+      released: 'שוחרר:'
+      pressedPlaceholder: '— טרם נלחץ מקש —'
+      releasedPlaceholder: '— טרם שוחרר מקש —'
+      footer: 'הדף נבנה עם SASS ו-CoffeeScript בלבד. לחץ על אות כדי לשמוע אותה.'
+      btn: 'עברית'
+      dir: 'rtl'
+
+  # ---------- letter-sound dictionaries (spoken letter names, per language) ----------
+  # Only real alphabet keys get a sound — punctuation / non-letter keys are skipped.
+  soundNames =
+    en:
+      lang: 'en-US'
+      names:
+        KeyA: 'A', KeyB: 'B', KeyC: 'C', KeyD: 'D', KeyE: 'E', KeyF: 'F', KeyG: 'G'
+        KeyH: 'H', KeyI: 'I', KeyJ: 'J', KeyK: 'K', KeyL: 'L', KeyM: 'M', KeyN: 'N'
+        KeyO: 'O', KeyP: 'P', KeyQ: 'Q', KeyR: 'R', KeyS: 'S', KeyT: 'T', KeyU: 'U'
+        KeyV: 'V', KeyW: 'W', KeyX: 'X', KeyY: 'Y', KeyZ: 'Z'
+    ur:
+      lang: 'ur-PK'
+      names:
+        KeyA: 'الف', KeyB: 'بے', KeyC: 'چے', KeyD: 'دال', KeyE: 'عین', KeyF: 'فے'
+        KeyG: 'گاف', KeyH: 'ہے', KeyI: 'یے', KeyJ: 'جیم', KeyK: 'کاف', KeyL: 'لام'
+        KeyM: 'میم', KeyN: 'نون', KeyO: 'ہے', KeyP: 'پے', KeyQ: 'قاف', KeyR: 'رے'
+        KeyS: 'سین', KeyT: 'تے', KeyU: 'ہمزہ', KeyV: 'طے', KeyW: 'واؤ', KeyX: 'شین'
+        KeyY: 'بڑی یے', KeyZ: 'زے'
+    he:
+      lang: 'he-IL'
+      names:
+        KeyA: 'שין', KeyB: 'נון', KeyC: 'בית', KeyD: 'גימל', KeyE: 'קוף', KeyF: 'כף'
+        KeyG: 'עין', KeyH: 'יוד', KeyI: 'נון', KeyJ: 'חית', KeyK: 'למד', KeyL: 'כף'
+        KeyM: 'צדי', KeyN: 'מם', KeyO: 'מם', KeyP: 'פא', KeyR: 'ריש', KeyS: 'דלת'
+        KeyT: 'אלף', KeyV: 'הא', KeyX: 'סמך', KeyY: 'טית', KeyZ: 'זין'
+
+  speakLetter = (code) ->
+    return unless window.speechSynthesis
+    lang = languages[langIndex]
+    entry = soundNames[lang]
+    text = entry.names[code]
+    return unless text # skip non-letter keys silently
+
+    window.speechSynthesis.cancel()
+    utter = new SpeechSynthesisUtterance text
+    utter.lang = entry.lang
+    utter.rate = 0.85
+    utter.pitch = 1
+    window.speechSynthesis.speak utter
+
+  findKeyElement = (code) ->
+    document.querySelector "[data-code=\"#{code}\"]"
+
+  applyLanguage = (lang) ->
+    dict = labels[lang]
+    text = ui[lang]
+
+    body.classList.remove 'lang-en', 'lang-ur', 'lang-he'
+    body.classList.add "lang-#{lang}"
+
+    # keyboard grid itself always stays LTR physically; only surrounding text flips
+    subtitleEl.setAttribute 'dir', text.dir
+    footerEl.setAttribute 'dir', text.dir
+
+    subtitleEl.textContent = text.subtitle
+    footerEl.textContent   = text.footer
+    pressedLabel.textContent  = text.pressed
+    releasedLabel.textContent = text.released
+    pressedName.textContent   = text.pressedPlaceholder
+    releasedName.textContent  = text.releasedPlaceholder
+    langBtnText.textContent   = text.btn
+
+    for code, label of dict
+      el = findKeyElement code
+      el.textContent = label if el
+
+  cycleLanguage = ->
+    langIndex = (langIndex + 1) % languages.length
+    applyLanguage languages[langIndex]
+
+  langBtn.addEventListener 'click', cycleLanguage
+
+  # ---------- keydown / keyup tracking ----------
+  window.addEventListener 'keydown', (e) ->
+    code = e.code
+    lang = languages[langIndex]
+    dict = labels[lang]
+    display = dict[code] ? e.key
+
+    unless activeKeys[code]
+      activeKeys[code] = true
+      el = findKeyElement code
+      el?.classList.add 'active'
+      pressedName.textContent = "#{display}  (#{code})"
+      speakLetter code
+
+    if e.code in ['Space', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+      e.preventDefault()
+
+  window.addEventListener 'keyup', (e) ->
+    code = e.code
+    lang = languages[langIndex]
+    dict = labels[lang]
+    display = dict[code] ? e.key
+
+    delete activeKeys[code]
+    el = findKeyElement code
+    el?.classList.remove 'active'
+    releasedName.textContent = "#{display}  (#{code})"
+
+  window.addEventListener 'blur', ->
+    for code of activeKeys
+      el = findKeyElement code
+      el?.classList.remove 'active'
+    activeKeys = {}
+
+  # initial paint
+  applyLanguage languages[langIndex]

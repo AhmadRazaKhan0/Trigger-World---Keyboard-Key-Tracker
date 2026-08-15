@@ -1,0 +1,238 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #7d1c4a, #2e0110 70%);
+  font-family: "Segoe UI", "Poppins", sans-serif;
+  color: #f4cce9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 12px 40px;
+  transition: font-family 0.15s ease;
+}
+body.lang-ur {
+  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+}
+body.lang-he {
+  font-family: "Noto Sans Hebrew", "Arial Hebrew", sans-serif;
+}
+
+.topbar {
+  width: 100%;
+  max-width: 1040px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.brand .brand-name {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #f4cce9, #d17d98);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand .brand-tag {
+  font-size: 12px;
+  color: #d17d98;
+}
+
+.lang-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid #a13a68;
+  background: #56021f;
+  color: #f4cce9;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.lang-btn .globe {
+  font-size: 16px;
+}
+.lang-btn:hover {
+  border-color: #d17d98;
+  box-shadow: 0 0 14px rgba(91, 140, 255, 0.35);
+}
+.lang-btn:active {
+  transform: scale(0.96);
+}
+
+.subtitle {
+  color: #d17d98;
+  font-size: 14px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.status-panel {
+  width: 100%;
+  max-width: 1040px;
+  background: #56021f;
+  border: 1px solid #a13a68;
+  border-radius: 14px;
+  padding: 16px 24px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 40px;
+  text-align: center;
+}
+.status-panel .status-line {
+  font-size: 17px;
+}
+.status-panel .status-line .label {
+  color: #d17d98;
+  margin-inline-end: 6px;
+}
+.status-panel .status-line .key-name {
+  color: #f4cce9;
+  font-weight: 700;
+}
+.status-panel #pressedLine .key-name {
+  color: #d17d98;
+}
+
+.keyboard-shell {
+  background: #56021f;
+  border: 1px solid #a13a68;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  max-width: 1040px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.keyboard {
+  direction: ltr;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.main-cluster,
+.side-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+}
+
+.row.gap-before {
+  margin-top: 14px;
+}
+
+.key.ghost {
+  visibility: hidden;
+  border: none;
+  background: transparent;
+}
+
+.key {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0 4px;
+  background: #7d1c4a;
+  border: 1px solid #a13a68;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.1;
+  text-align: center;
+  color: #f4cce9;
+  user-select: none;
+  transition: transform 0.06s ease, background 0.1s ease, box-shadow 0.1s ease, font-family 0.1s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.key.w-1_25 {
+  width: 54px;
+}
+.key.w-1_5 {
+  width: 66px;
+}
+.key.w-1_75 {
+  width: 78px;
+}
+.key.w-2 {
+  width: 90px;
+}
+.key.w-2_25 {
+  width: 102px;
+}
+.key.w-2_75 {
+  width: 126px;
+}
+.key.w-6_25 {
+  width: 294px;
+}
+.key.blank {
+  visibility: hidden;
+}
+.key.active {
+  background: #d17d98;
+  border-color: #d17d98;
+  color: #fff;
+  transform: translateY(2px) scale(0.96);
+  box-shadow: 0 0 16px rgba(209, 125, 152, 0.55);
+}
+
+body.lang-ur .key {
+  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+  font-size: 15px;
+}
+
+body.lang-he .key {
+  font-family: "Noto Sans Hebrew", "Arial Hebrew", sans-serif;
+  font-size: 14px;
+}
+
+.footer-note {
+  margin-top: 22px;
+  color: #d17d98;
+  font-size: 12px;
+  text-align: center;
+  max-width: 700px;
+}
+
+@media (max-width: 640px) {
+  .brand-name {
+    font-size: 22px;
+  }
+  .topbar {
+    flex-direction: row;
+  }
+}
