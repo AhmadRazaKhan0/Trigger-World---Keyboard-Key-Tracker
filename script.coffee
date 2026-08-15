@@ -1,8 +1,5 @@
-# Trigger World — Keyboard Tracker + Language Switcher (CoffeeScript)
-
 document.addEventListener 'DOMContentLoaded', ->
 
-  # ---------- DOM refs ----------
   body          = document.body
   pressedLine   = document.getElementById 'pressedLine'
   releasedLine  = document.getElementById 'releasedLine'
@@ -15,12 +12,10 @@ document.addEventListener 'DOMContentLoaded', ->
   langBtnText   = document.getElementById 'langBtnText'
   langBtn       = document.getElementById 'langBtn'
 
-  # ---------- state ----------
   activeKeys   = {}
   languages    = ['en', 'ur', 'he']
   langIndex    = 0
 
-  # ---------- key label dictionaries (per data-code) ----------
   labels =
     en:
       Escape: 'Esc', F1: 'F1', F2: 'F2', F3: 'F3', F4: 'F4', F5: 'F5', F6: 'F6'
@@ -85,7 +80,6 @@ document.addEventListener 'DOMContentLoaded', ->
       Delete: 'מחיקה', End: 'סוף', PageDown: 'דף למטה'
       ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→'
 
-  # ---------- UI text per language ----------
   ui =
     en:
       subtitle: 'Press any key on your PC keyboard to see it live'
@@ -115,8 +109,6 @@ document.addEventListener 'DOMContentLoaded', ->
       btn: 'עברית'
       dir: 'rtl'
 
-  # ---------- letter-sound dictionaries (spoken letter names, per language) ----------
-  # Only real alphabet keys get a sound — punctuation / non-letter keys are skipped.
   soundNames =
     en:
       lang: 'en-US'
